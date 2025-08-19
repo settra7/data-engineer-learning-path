@@ -29,6 +29,18 @@ from pathlib import Path
 csv_file_path = Path(__file__).parent / 'retail_product_dataset_with_missing_values.csv'
 df = pd.read_csv(csv_file_path, sep=',', encoding='utf-8')
 
+# Clean the data by filling missing values
+# Here we assume that 'Price', 'Discount', and 'Rating' are numerical columns,
+# and 'Stock' and 'Category' are categorical columns.
+# Fill missing numerical values with the mean and categorical with a 'Unknown'
+df.fillna({
+    'Price': df['Price'].mean(),
+    'Discount': df['Discount'].mean(),
+    'Rating': df['Rating'].mean(),
+    'Stock': 'Unknown',
+    'Category': 'Unknown'
+}, inplace=True)
+
 # Connect to the SQL Server database
 conn = cnn.connect(
     "Driver={SQL Server};"
@@ -38,14 +50,6 @@ conn = cnn.connect(
 
 # Create a cursor object to execute SQL commands
 crs = conn.cursor()
-
-df.fillna({
-    'Price': df['Price'].mean(),
-    'Discount': df['Discount'].mean(),
-    'Rating': df['Rating'].mean(),
-    'Stock': 'Unknown',
-    'Category': 'Unknown'
-}, inplace=True)
 
 # Create the RetailProducts table if it does not exist
 crs.execute("""
