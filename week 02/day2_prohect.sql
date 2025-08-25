@@ -8,25 +8,23 @@ USE NORTHWND;
 GO
 
 SELECT
-	c.CustomerID -- Customer Identifier
-	,o.OrderID -- Order Identifier
-	,FORMAT(o.OrderDate, 'yyyy/MM/dd') AS [OrderDate] -- Formatted Order Date
-	,ROW_NUMBER() OVER (PARTITION BY c.CustomerID ORDER BY o.OrderDate) AS [RowNumPerCustomer] -- Order Number per Customer
+	CustomerID -- Customer Identifier
+	,OrderID -- Order Identifier
+	,FORMAT(OrderDate, 'yyyy/MM/dd') AS [OrderDate] -- Formatted Order Date
+	,ROW_NUMBER() OVER (PARTITION BY CustomerID ORDER BY OrderDate) AS [RowNumPerCustomer] -- Order Number per Customer
 	,CASE -- Check for Consecutive Orders
 		WHEN
 			DATEDIFF(day,
-				o.OrderDate, -- Current Order Date
-				LEAD(o.OrderDate) OVER (PARTITION BY c.CustomerID ORDER BY o.OrderDate)) = 1 -- Next Order Date
+				OrderDate, -- Current Order Date
+				LEAD(OrderDate) OVER (PARTITION BY CustomerID ORDER BY OrderDate)) = 1 -- Next Order Date
 			OR 
 			DATEDIFF(day,
-				LAG(o.OrderDate) OVER (PARTITION BY c.CustomerID ORDER BY o.OrderDate), -- Previous Order Date
-				o.OrderDate) = 1 -- Current Order Date
+				LAG(OrderDate) OVER (PARTITION BY CustomerID ORDER BY OrderDate), -- Previous Order Date
+				OrderDate) = 1 -- Current Order Date
 		THEN 'Yes' -- Consecutive Orders
 		ELSE 'No' -- Not Consecutive Orders
 	END AS [ConsecutiveOrders]
 FROM
-	[dbo].[Customers] c
-	INNER JOIN [dbo].[Orders] o
-	ON c.CustomerID = o.CustomerID
+	[dbo].[Orders]
 ORDER BY
-	c.CustomerID -- Order by CustomerID
+	CustomerID -- Order by CustomerID
