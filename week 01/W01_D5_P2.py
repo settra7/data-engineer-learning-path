@@ -12,7 +12,7 @@
 import pandas as pd
 from pathlib import Path
 
-csv_file_path = Path(__file__).parent / 'retail_product_dataset_with_missing_values.csv'
+csv_file_path = Path(__file__).parent / 'W01_D5_P2_retail_product_dataset_with_missing_values.csv'
 
 df = pd.read_csv(csv_file_path, sep=',', encoding='utf-8')
 
@@ -60,5 +60,5 @@ df.sort_values(by='Price', ascending=True, inplace=True)
 print(df.head())
 
 # Save the processed data to a new CSV file processed.csv
-output_file_path = Path(__file__).parent / 'processed.csv'
+output_file_path = Path(__file__).parent / 'W01_D5_P2_processed.csv'
 df.to_csv(output_file_path, index=False)
